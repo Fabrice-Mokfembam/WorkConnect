@@ -7,9 +7,9 @@ const Navbar: React.FC = () => {
   
   // Array of navigation links
   const navLinks = [
-    { name: 'Browse Services', link: '/services' },
+    { name: 'Top Professionals', link: '/top-pros' },
     { name: 'How It Works', link: '/how-it-works' },
-    { name: 'Join as Pro', link: '/join-pro' },
+    { name: 'Search Professionals', link: '/search-pros' },
   ];
 
   return (
@@ -39,16 +39,16 @@ const Navbar: React.FC = () => {
         {/* Desktop Auth Buttons */}
         <div className="hidden md:flex space-x-4 ml-4">
           <Link 
-            to="/login" 
+            to="/auth/login" 
             className="text-[#4B5563] hover:text-[#2563EB] px-3 py-1 outline-0"
           >
             Login
           </Link>
           <Link 
-            to="/signup" 
+            to="/auth/signup" 
             className="bg-[#2563EB] text-white px-4 py-1 rounded-md outline-0 hover:bg-blue-700 transition-colors duration-200"
           >
-            Sign Up
+            Sign Up As Pro
           </Link>
         </div>
       </div>
@@ -79,18 +79,18 @@ const Navbar: React.FC = () => {
             {/* Mobile Auth Buttons */}
             <div className="flex flex-col space-y-3 pt-4 border-t border-gray-100">
               <Link 
-                to="/login" 
+                to="/auth/login" 
                 className="text-[#4B5563] hover:text-[#2563EB] py-2 outline-0 text-center"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Login
               </Link>
               <Link 
-                to="/signup" 
+                to="/auth/signup" 
                 className="bg-[#2563EB] text-white px-4 py-2 rounded-md outline-0 hover:bg-blue-700 transition-colors duration-200 text-center"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Sign Up
+                Sign Up As Pro
               </Link>
             </div>
           </div>
