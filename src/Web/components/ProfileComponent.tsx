@@ -1,5 +1,6 @@
 import React from 'react';
 import { Star, MapPin, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface Professional {
   name: string;
@@ -12,6 +13,13 @@ interface Professional {
 }
 
 const ProfessionalCard: React.FC<{ professional: Professional }> = ({ professional }) => {
+  const navigate = useNavigate()
+
+
+  const navigateToUserProfile = ()=>{
+    navigate('/profile/mok')
+  }
+
   const renderStars = (rating: number) => {
     return (
       <div className="flex items-center">
@@ -78,7 +86,7 @@ const ProfessionalCard: React.FC<{ professional: Professional }> = ({ profession
         </div>
         
         {/* View Profile Button */}
-        <button className="mt-6 w-full flex items-center justify-between py-3 px-4 bg-[#2563EB] text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 group/button">
+        <button onClick={navigateToUserProfile} className="mt-6 w-full flex items-center justify-between py-3 px-4 bg-[#2563EB] text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 group/button">
           <span>View Profile</span>
           <ChevronRight className="h-4 w-4 transition-transform duration-200 group-hover/button:translate-x-1" />
         </button>
