@@ -1,29 +1,40 @@
 import React from 'react';
 import { Lock, Mail, LogIn } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { workLogo } from '../../../assets/images';
-
+import { useLogin } from '../hooks/useAuth';
+import { useUser } from '../../../hooks/useUser'; 
 
 const Login: React.FC = () => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [rememberMe, setRememberMe] = React.useState(false);
+  const navigate = useNavigate();
+  const { mutate, isPending, error } = useLogin();
+  const { storeUser } = useUser();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log({ email, password, rememberMe });
+    const data = { email: email, password };
+    console.log('Login data:', data);
+
+    mutate(data, {
+      onSuccess: (response) => {
+
+        storeUser(response);
+        navigate('/');
+      },
+      onError: (err) => {
+        console.error('Login error:', err);
+ 
+      },
+    });
   };
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <img 
-            className="h-16 w-auto" 
-            src={workLogo} 
-            alt="WorkConnect Logo" 
-          />
+          <img className="h-16 w-auto" src={workLogo} alt="WorkConnect Logo" />
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Welcome back to WorkConnect
@@ -35,6 +46,11 @@ const Login: React.FC = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          {error && (
+            <div className="text-red-600 text-sm mb-4">
+              {error.message || 'Login failed. Please check your credentials.'}
+            </div>
+          )}
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Email Field */}
             <div>
@@ -78,31 +94,7 @@ const Login: React.FC = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   className="focus:ring-[#2563EB] outline-0 focus:border-[#2563EB] block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-3 border"
                   placeholder="••••••••"
-                  
                 />
-              </div>
-            </div>
-
-            {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 text-[#2563EB] focus:ring-[#2563EB] border-gray-300 rounded"
-                />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                  Remember me
-                </label>
-              </div>
-
-              <div className="text-sm">
-                <Link to="/auth/forgot-password" className="font-medium text-[#2563EB] hover:text-blue-700">
-                  Forgot your password?
-                </Link>
               </div>
             </div>
 
@@ -110,12 +102,13 @@ const Login: React.FC = () => {
             <div>
               <button
                 type="submit"
-                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#2563EB] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2563EB] transition-colors duration-200"
+                disabled={isPending}
+                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#2563EB] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2563EB] transition-colors duration-200 disabled:bg-gray-400"
               >
                 <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                   <LogIn className="h-5 w-5 text-white group-hover:text-blue-200 transition-colors duration-200" />
                 </span>
-                Sign in
+                {isPending ? 'Signing in...' : 'Sign in'}
               </button>
             </div>
           </form>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, MapPin, Phone, Mail, Briefcase, CheckCircle, Award, ChevronRight, HardHat } from 'lucide-react';
+import { Star, MapPin, Phone, Mail, Briefcase, CheckCircle, Award, HardHat } from 'lucide-react';
 import { person1, person2 } from '../../../assets/images';
 
 const Profile: React.FC = () => {
@@ -78,12 +78,12 @@ const Profile: React.FC = () => {
           <div className="mt-20 md:mt-12 md:ml-44">
             <div className="flex flex-col md:flex-row md:items-end justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">{professional.name}</h1>
+                <h1 className="text-2xl font-bold text-gray-900">{professional.name}</h1>
                 <div className="flex items-center mt-1">
                   <HardHat className="h-5 w-5 text-[#2563EB] mr-2" />
-                  <span className="text-lg text-[#4B5563]">{professional.occupation}</span>
+                  <span className="text-md text-[#4B5563]">{professional.occupation}</span>
                 </div>
-                <p className="text-lg text-[#4B5563] mt-1">{professional.title}</p>
+                {/* <p className="text-md text-[#4B5563] mt-1">{professional.title}</p> */}
                 
                 <div className="flex items-center mt-2">
                   <div className="flex">
@@ -94,7 +94,7 @@ const Profile: React.FC = () => {
                   </span>
                 </div>
                 
-                <div className="flex items-center mt-2 text-gray-600">
+                <div className="flex items-center mt-2 text-gray-600 text-md">
                   <MapPin className="h-5 w-5 text-[#2563EB] mr-1" />
                   <span>{professional.location}</span>
                 </div>
@@ -116,19 +116,19 @@ const Profile: React.FC = () => {
             <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-white p-4 rounded-lg shadow-sm">
                 <p className="text-sm text-gray-500">Years Experience</p>
-                <p className="text-2xl font-bold text-[#2563EB]">{professional.yearsExperience}+</p>
+                <p className="text-xl font-bold text-[#2563EB]">{professional.yearsExperience}+</p>
               </div>
               <div className="bg-white p-4 rounded-lg shadow-sm">
                 <p className="text-sm text-gray-500">Clients Served</p>
-                <p className="text-2xl font-bold text-[#2563EB]">{professional.clientsServed}+</p>
+                <p className="text-xl font-bold text-[#2563EB]">{professional.clientsServed}+</p>
               </div>
               <div className="bg-white p-4 rounded-lg shadow-sm">
                 <p className="text-sm text-gray-500">Services Offered</p>
-                <p className="text-2xl font-bold text-[#2563EB]">{professional.otherServices.length}+</p>
+                <p className="text-xl font-bold text-[#2563EB]">{professional.otherServices.length}+</p>
               </div>
               <div className="bg-white p-4 rounded-lg shadow-sm">
                 <p className="text-sm text-gray-500">Certifications</p>
-                <p className="text-2xl font-bold text-[#2563EB]">{professional.certifications.length}+</p>
+                <p className="text-xl font-bold text-[#2563EB]">{professional.certifications.length}+</p>
               </div>
             </div>
 
@@ -137,8 +137,6 @@ const Profile: React.FC = () => {
               <h2 className="text-xl font-bold text-gray-900 mb-4">About</h2>
               <p className="text-gray-700">{professional.about}</p>
             </div>
-
-          
 
             {/* Other Services */}
             <div className="mt-8 bg-white p-6 rounded-lg shadow-sm">
@@ -177,7 +175,7 @@ const Profile: React.FC = () => {
             {/* Gallery Section */}
             <div className="mt-8 bg-white p-6 rounded-lg shadow-sm">
               <h2 className="text-xl font-bold text-gray-900 mb-4">Project Gallery</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {professional.gallery.map((image, index) => (
                   <div key={index} className="aspect-square bg-gray-200 rounded-lg overflow-hidden group">
                     <img 
@@ -189,37 +187,7 @@ const Profile: React.FC = () => {
                 ))}
               </div>
             </div>
-
-            {/* Reviews Section */}
-            <div className="mt-8 bg-white p-6 rounded-lg shadow-sm">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Client Reviews</h2>
-              
-              <div className="space-y-6">
-                {/* Sample Review */}
-                <div className="border-b border-gray-100 pb-6">
-                  <div className="flex justify-between">
-                    <div>
-                      <h3 className="font-medium text-gray-900">Michael Thompson</h3>
-                      <div className="flex items-center mt-1">
-                        {renderStars(5)}
-                        <span className="ml-2 text-sm text-gray-500">2 weeks ago</span>
-                      </div>
-                    </div>
-                    <div className="text-sm text-gray-500">HVAC Installation</div>
-                  </div>
-                  <p className="mt-3 text-gray-700">
-                    "Sarah did an amazing job installing our new HVAC system. She was punctual, professional, and explained everything clearly. The system works perfectly and she even came back to check on it after a week."
-                  </p>
-                </div>
-                
-                {/* Add more reviews here */}
-              </div>
-
-              <button className="mt-6 flex items-center text-[#2563EB] hover:text-blue-700">
-                View all {professional.reviews} reviews
-                <ChevronRight className="h-5 w-5 ml-1" />
-              </button>
-            </div>
+           
           </div>
         </div>
       </div>

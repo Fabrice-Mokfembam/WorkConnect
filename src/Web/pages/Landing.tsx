@@ -11,8 +11,13 @@ const Landing:React.FC = () => {
     <div>
         <Hero/>
         <CategoriesSection/>
+        <div id='works'>
         <HowItWorksSection/>
-        <FeaturedProffesionals/>
+        </div>
+       <div id='top-pros'>
+       <FeaturedProffesionals/>
+       </div>
+       
         <Testimonials/>
         <ProSection/>
     </div>

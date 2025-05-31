@@ -1,4 +1,3 @@
-
 import AuthLayout from "../features/Authentication/Components/AuthLayout"
 import Login from "../features/Authentication/Pages/Login"
 import SignUp from "../features/Authentication/Pages/SignUp"

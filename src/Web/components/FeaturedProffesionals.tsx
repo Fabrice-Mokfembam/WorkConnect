@@ -32,7 +32,7 @@ const FeaturedProfessionals: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         {/* Section Heading */}
         <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-          Featured Professionals
+          Top Professionals
         </h2>
         
         {/* Professionals Grid */}
@@ -40,6 +40,10 @@ const FeaturedProfessionals: React.FC = () => {
           {professionals.map((professional, index) => (
             <ProfessionalCard key={index} professional={professional} />
           ))}
+        </div>
+
+        <div>
+          see more
         </div>
       </div>
     </div>

@@ -17,6 +17,7 @@ const ProfessionalCard: React.FC<{ professional: Professional }> = ({ profession
 
 
   const navigateToUserProfile = ()=>{
+    
     navigate('/profile/mok')
   }
 

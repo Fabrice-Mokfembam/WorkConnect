@@ -1,265 +1,252 @@
 import React, { useState } from 'react';
-import { User, Mail, Lock, MapPin, Briefcase, ChevronDown, Phone } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { User, Mail, Lock, MapPin, Briefcase, Phone} from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+
+
 import { workLogo } from '../../../assets/images';
+import InputField from '../Components/InputField';
+import { occupations } from '../../../constants';
+import { useRegister } from '../hooks/useAuth';
+import { useUser } from '../../../hooks/useUser';
 
 const SignUp: React.FC = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    password: '',
+    isProfessional: false,
+    title: '',
     occupation: '',
     customOccupation: '',
-    password: '',
     location: '',
-    contact: ''
+    contact: { phone: '' },
   });
-
   const [showOccupationDropdown, setShowOccupationDropdown] = useState(false);
-  
-  const occupations = [
-    'Plumber',
-    'Electrician',
-    'Painter',
-    'Carpenter',
-    'Handyman',
-    'HVAC Technician',
-    'Landscaper',
-    'Cleaner',
-    'Interior Designer',
-    'Other'
-  ];
+const {mutate,isPending,error} = useRegister();
+
+const {storeUser} = useUser()
+
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    if (name === 'phone') {
+      setFormData((prev) => ({
+        ...prev,
+        contact: { ...prev.contact, phone: value },
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleOccupationSelect = (occupation: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       occupation,
-      customOccupation: occupation === 'Other' ? prev.customOccupation : ''
+      customOccupation: occupation === 'Other' ? prev.customOccupation : '',
+      title: occupation === 'Other' ? prev.customOccupation : occupation,
     }));
     setShowOccupationDropdown(false);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleProfessionalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isProfessional = e.target.value === 'professional';
+    setFormData((prev) => ({
+      ...prev,
+      isProfessional,
+      title: isProfessional ? prev.title : '',
+      occupation: isProfessional ? prev.occupation : '',
+      customOccupation: isProfessional ? prev.customOccupation : '',
+      location: isProfessional ? prev.location : '',
+      contact: isProfessional ? prev.contact : { phone: '' },
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const submittedData = {
-      ...formData,
-      occupation: formData.occupation === 'Other' ? formData.customOccupation : formData.occupation
+  
+    const data = {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      isProfessional: formData.isProfessional,
+      ...(formData.isProfessional && {
+        title: formData.occupation || formData.customOccupation,
+        occupation: formData.occupation === 'Other' ? formData.customOccupation : formData.occupation,
+        location: formData.location,
+        contact: { phone: formData.contact.phone },
+  
+      })
     };
-    console.log('Form submitted:', submittedData);
-    // Handle signup logic here
+
+    console.log('data',data)
+  
+    mutate(data, {
+      onSuccess: (data) => {
+        storeUser(data);
+        navigate('/');
+      }
+    });
   };
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#F9FAFB] flex flex-col items-center justify-center py-8 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <img 
-            className="h-16 w-auto" 
-            src={workLogo} 
-            alt="WorkConnect Logo" 
-          />
+          <img className="h-16 w-auto" src={workLogo} alt="WorkConnect Logo" />
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Join WorkConnect as a Professional
+          Join WorkConnect
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Connect with clients and grow your business
+          Create an account to connect with clients or find professionals
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div className="mt-8 sm:mx-auto max-w-[94%] w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow rounded-xl sm:rounded-lg sm:px-10">
+          {error && <div className="text-red-600 text-sm mb-4">{error.message}</div>}
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {/* Name Field */}
+            {/* User Type Selection */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                Full Name
+              <label className="block text-sm font-medium text-gray-700">
+                Sign up as
               </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="focus:ring-[#2563EB] focus:border-[#2563EB] block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-3 border"
-                  placeholder="John Doe"
-                />
-              </div>
-            </div>
-
-            {/* Email Field */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
-              </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="focus:ring-[#2563EB] focus:border-[#2563EB] block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-3 border"
-                  placeholder="you@example.com"
-                />
-              </div>
-            </div>
-
-            {/* Occupation Field with Dropdown */}
-            <div>
-              <label htmlFor="occupation" className="block text-sm font-medium text-gray-700">
-                Profession/Occupation
-              </label>
-              <div className="mt-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Briefcase className="h-5 w-5 text-gray-400" />
-                </div>
-                <div className="relative">
+              <div className="mt-2 flex space-x-4">
+                <label className="flex items-center">
                   <input
-                    id="occupation"
-                    name="occupation"
-                    type="text"
-                    value={formData.occupation}
-                    onChange={handleChange}
-                    onClick={() => setShowOccupationDropdown(true)}
-                    className="focus:ring-[#2563EB] focus:border-[#2563EB] block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-3 border"
-                    placeholder="Select or type your profession"
+                    type="radio"
+                    name="userType"
+                    value="client"
+                    checked={!formData.isProfessional}
+                    onChange={handleProfessionalChange}
+                    className="focus:ring-[#2563EB] h-4 w-4 text-[#2563EB] border-gray-300"
                   />
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <ChevronDown className="h-5 w-5 text-gray-400" />
-                  </div>
-                </div>
-                {showOccupationDropdown && (
-                  <div className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                    {occupations.map((occupation) => (
-                      <div
-                        key={occupation}
-                        className="cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-[#2563EB] hover:text-white"
-                        onClick={() => handleOccupationSelect(occupation)}
-                      >
-                        <span className="block truncate">{occupation}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                  <span className="ml-2 text-sm text-gray-600">Client</span>
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="userType"
+                    value="professional"
+                    checked={formData.isProfessional}
+                    onChange={handleProfessionalChange}
+                    className="focus:ring-[#2563EB] h-4 w-4 text-[#2563EB] border-gray-300"
+                  />
+                  <span className="ml-2 text-sm text-gray-600">Professional</span>
+                </label>
               </div>
             </div>
 
-            {/* Custom Occupation Field (shown when "Other" is selected) */}
-            {formData.occupation === 'Other' && (
-              <div>
-                <label htmlFor="customOccupation" className="block text-sm font-medium text-gray-700">
-                  Specify Your Profession
-                </label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Briefcase className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    id="customOccupation"
+            {/* Name */}
+            <InputField
+              label="Full Name"
+              name="name"
+              type="text"
+              icon={User}
+              placeholder="John Doe"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
+
+            {/* Email */}
+            <InputField
+              label="Email address"
+              name="email"
+              type="email"
+              icon={Mail}
+              placeholder="you@example.com"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              autoComplete="email"
+            />
+
+            {/* Password */}
+            <InputField
+              label="Password"
+              name="password"
+              type="password"
+              icon={Lock}
+              placeholder="••••••••"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              autoComplete="new-password"
+            />
+
+            {formData.isProfessional && (
+              <>
+                {/* Occupation */}
+                <InputField
+                  label="Occupation"
+                  name="occupation"
+                  type="text"
+                  icon={Briefcase}
+                  placeholder="Select or type your profession"
+                  value={formData.occupation}
+                  onChange={handleChange}
+                  onClick={() => setShowOccupationDropdown(true)}
+                  required
+                  dropdownOptions={occupations}
+                  showDropdown={showOccupationDropdown}
+                  onSelect={handleOccupationSelect}
+                />
+
+                {/* Custom Occupation */}
+                {formData.occupation === 'Other' && (
+                  <InputField
+                    label="Specify Your Profession"
                     name="customOccupation"
                     type="text"
-                    required
+                    icon={Briefcase}
+                    placeholder="Enter your profession"
                     value={formData.customOccupation}
                     onChange={handleChange}
-                    className="focus:ring-[#2563EB] focus:border-[#2563EB] block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-3 border"
-                    placeholder="Enter your profession"
+                    required
                   />
-                </div>
-              </div>
-            )}
+                )}
 
-            {/* Contact Field */}
-            <div>
-              <label htmlFor="contact" className="block text-sm font-medium text-gray-700">
-                Contact Number
-              </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Phone className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="contact"
-                  name="contact"
-                  type="tel"
-                  required
-                  value={formData.contact}
-                  onChange={handleChange}
-                  className="focus:ring-[#2563EB] focus:border-[#2563EB] block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-3 border"
-                  placeholder="+1 (555) 123-4567"
-                />
-              </div>
-            </div>
-
-            {/* Password Field */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="new-password"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="focus:ring-[#2563EB] focus:border-[#2563EB] block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-3 border"
-                  placeholder="••••••••"
-                />
-              </div>
-            </div>
-
-            {/* Location Field */}
-            <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700">
-                Location
-              </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <MapPin className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="location"
+                {/* Location */}
+                <InputField
+                  label="Location"
                   name="location"
                   type="text"
-                  required
+                  icon={MapPin}
+                  placeholder="City, State"
                   value={formData.location}
                   onChange={handleChange}
-                  className="focus:ring-[#2563EB] focus:border-[#2563EB] block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-3 border"
-                  placeholder="City, State"
+                  required
                 />
-              </div>
-            </div>
+
+                {/* Contact Phone */}
+                <InputField
+                  label="Contact Number"
+                  name="phone"
+                  type="tel"
+                  icon={Phone}
+                  placeholder="+1 (555) 123-4567"
+                  value={formData.contact.phone}
+                  onChange={handleChange}
+                  required
+                />
+              </>
+            )}
 
             {/* Submit Button */}
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#2563EB] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2563EB] transition-colors duration-200"
+                disabled={isPending}
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#2563EB] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2563EB] transition-colors duration-200 disabled:bg-gray-400"
               >
-                Create Professional Account
+                {isPending ? 'Creating Account...' : 'Create Account'}
               </button>
             </div>
           </form>
@@ -276,7 +263,6 @@ const SignUp: React.FC = () => {
                 </span>
               </div>
             </div>
-
             <div className="mt-6">
               <Link
                 to="/auth/login"
