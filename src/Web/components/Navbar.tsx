@@ -69,7 +69,7 @@ const Navbar: React.FC = () => {
               className="flex items-center text-[#4B5563] hover:text-[#2563EB] transition-colors duration-200"
             >
               <UserCircle className="h-8 w-8" />
-              <span className="ml-2 hidden lg:inline">{getFirstName(user.name)}</span>
+              <span className="ml-2 hidden lg:inline">{getFirstName(user.name!)}</span>
             </Link>
           </div>
         ) : (
@@ -133,7 +133,7 @@ const Navbar: React.FC = () => {
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <UserCircle className="h-6 w-6 mr-2" />
-                  <span>{getFirstName(user.name)}</span>
+                  <span>{getFirstName(user.name!)}</span>
                 </Link>
               </div>
             ) : (

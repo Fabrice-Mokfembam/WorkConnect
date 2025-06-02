@@ -4,7 +4,7 @@
     'Painter',
     'Carpenter',
     'Handyman',
-    'HVAC Technician',
+    'HVAC Technician','Electronics Technicians','Phone Repair Technician',
     'Landscaper',
     'Cleaner',
     'Interior Designer',

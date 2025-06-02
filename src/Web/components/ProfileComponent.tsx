@@ -45,11 +45,6 @@ const ProfessionalCard: React.FC<{ professional: Professional }> = ({ profession
           alt={`${professional.name}'s profile`}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-        <div className="absolute bottom-4 left-4">
-          <span className="inline-block px-3 py-1 bg-[#2563EB] text-white text-xs font-medium rounded-full">
-            Available Now
-          </span>
-        </div>
       </div>
       
       {/* Profile Info */}
@@ -72,12 +67,6 @@ const ProfessionalCard: React.FC<{ professional: Professional }> = ({ profession
         
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3 mt-4">
-          <div className="bg-[#F9FAFB] p-2 rounded-lg">
-            <p className="text-xs text-gray-500">Projects</p>
-            <p className="font-bold text-[#2563EB]">
-              {professional.projectsCompleted || '50+'}
-            </p>
-          </div>
           <div className="bg-[#F9FAFB] p-2 rounded-lg">
             <p className="text-xs text-gray-500">Experience</p>
             <p className="font-bold text-[#2563EB]">

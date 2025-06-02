@@ -1,44 +1,28 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Star, MapPin, Phone, Mail, Briefcase, CheckCircle, Award, HardHat } from 'lucide-react';
 import { person1, person2 } from '../../../assets/images';
+import { useGetProfileByName } from '../hooks/useProfilehook';
+import { useUser } from '../../../hooks/useUser';
 
 const Profile: React.FC = () => {
-  // Sample professional data
-  const professional = {
-    name: "Sarah Johnson",
-    title: "Licensed Plumber & HVAC Specialist",
-    occupation: "Master Plumber", 
-    rating: 4.8,
-    reviews: 142,
-    location: "Casava Farm, Limbe",
-    yearsExperience: 8,
-    clientsServed: 320,
-    image: `${person1}`,
-    coverImage: `${person2}`,
-    contact: {
-      phone: "(555) 123-4567",
-      email: "sarah.johnson@workconnect.com"
-    },
-    certifications: [
-      "Master Plumber License",
-      "EPA Certified",
-      "OSHA 30-Hour"
-    ],
-    otherServices: [ // Added other services section
-      "Bathroom Remodeling",
-      "Gas Line Installation",
-      "Sump Pump Installation"
-    ],
-    gallery: [
-      "/path/to/gallery-1.jpg",
-      "/path/to/gallery-2.jpg",
-      "/path/to/gallery-3.jpg",
-      "/path/to/gallery-4.jpg",
-      "/path/to/gallery-5.jpg",
-      "/path/to/gallery-6.jpg"
-    ],
-    about: "With over 8 years of experience in residential and commercial plumbing, I take pride in delivering exceptional service with attention to detail. My work is fully insured and comes with a 100% satisfaction guarantee."
-  };
+  const { name } = useParams<{ name: string }>();
+  const { data: professional, isLoading, error } = useGetProfileByName(name || '');
+  const navigate = useNavigate();
+
+  const {user} = useUser();
+
+  const {token,storeUser,clearUser} = useUser()
+
+  useEffect(()=>{
+    if(professional){
+      storeUser({token:token!,user:professional})
+    }
+  },[professional,token,storeUser])
+
+  if (isLoading) return <div className="flex justify-center py-12">Loading profile...</div>;
+  if (error) return <div className="flex justify-center py-12">Error loading profile</div>;
+  if (!professional) return <div className="flex justify-center py-12">Profile not found</div>;
 
   const renderStars = (rating: number) => {
     return [...Array(5)].map((_, i) => (
@@ -49,20 +33,21 @@ const Profile: React.FC = () => {
     ));
   };
 
+ 
   return (
     <div className="bg-[#F9FAFB] min-h-screen pb-12">
       {/* Cover Photo - Centered with max-w */}
       <div className="flex justify-center">
         <div className="w-full max-w-6xl h-48 md:h-64 bg-gray-300 relative">
           <img 
-            src={professional.coverImage} 
+            src={professional.coverImage || person2} 
             className="w-full h-full object-cover"
             alt="Cover"
           />
           <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 md:left-12 md:translate-x-0">
             <div className="h-32 w-32 rounded-full border-4 border-white bg-white overflow-hidden shadow-lg">
               <img 
-                src={professional.image} 
+                src={professional.image || person1} 
                 className="w-full h-full object-cover"
                 alt={professional.name}
               />
@@ -77,20 +62,20 @@ const Profile: React.FC = () => {
           {/* Header Section */}
           <div className="mt-20 md:mt-12 md:ml-44">
             <div className="flex flex-col md:flex-row md:items-end justify-between">
-              <div>
+              <div className='flex justify-between'>
+                <div>
                 <h1 className="text-2xl font-bold text-gray-900">{professional.name}</h1>
                 <div className="flex items-center mt-1">
                   <HardHat className="h-5 w-5 text-[#2563EB] mr-2" />
                   <span className="text-md text-[#4B5563]">{professional.occupation}</span>
                 </div>
-                {/* <p className="text-md text-[#4B5563] mt-1">{professional.title}</p> */}
                 
                 <div className="flex items-center mt-2">
                   <div className="flex">
-                    {renderStars(professional.rating)}
+                    {renderStars(professional.rating || 0)}
                   </div>
                   <span className="ml-2 text-sm text-gray-600">
-                    {professional.rating} ({professional.reviews} reviews)
+                    {professional.rating?.toFixed(1)} ({professional.reviews} reviews)
                   </span>
                 </div>
                 
@@ -98,6 +83,87 @@ const Profile: React.FC = () => {
                   <MapPin className="h-5 w-5 text-[#2563EB] mr-1" />
                   <span>{professional.location}</span>
                 </div>
+                </div>
+                
+                {/* settings */}
+                { user?.name === professional.name && (
+  <div className="relative">
+    <button 
+      className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+      onClick={(e) => {
+        e.stopPropagation();
+        document.getElementById('profile-dropdown')?.classList.toggle('hidden');
+      }}
+    >
+      <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        className="h-6 w-6 text-gray-500" 
+        fill="none" 
+        viewBox="0 0 24 24" 
+        stroke="currentColor"
+      >
+        <path 
+          strokeLinecap="round" 
+          strokeLinejoin="round" 
+          strokeWidth={2} 
+          d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" 
+        />
+      </svg>
+    </button>
+    
+    <div 
+      id="profile-dropdown" 
+      className="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10"
+    >
+      <div className="py-1">
+        <a
+          href={`/edit/profile/${professional.name}`}
+          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-5 w-5 mr-2" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" 
+            />
+          </svg>
+          Edit Profile
+        </a>
+        <button
+          onClick={() => {
+          clearUser()
+         navigate('/auth/login')
+          }}
+          className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-5 w-5 mr-2" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" 
+            />
+          </svg>
+          Logout
+      </button>
+      </div>
+    </div>
+  </div>
+)}
+                
               </div>
               
               <div className="mt-4 md:mt-0 flex space-x-3">
@@ -124,11 +190,11 @@ const Profile: React.FC = () => {
               </div>
               <div className="bg-white p-4 rounded-lg shadow-sm">
                 <p className="text-sm text-gray-500">Services Offered</p>
-                <p className="text-xl font-bold text-[#2563EB]">{professional.otherServices.length}+</p>
+                <p className="text-xl font-bold text-[#2563EB]">{professional.otherServices?.length || 0}+</p>
               </div>
               <div className="bg-white p-4 rounded-lg shadow-sm">
                 <p className="text-sm text-gray-500">Certifications</p>
-                <p className="text-xl font-bold text-[#2563EB]">{professional.certifications.length}+</p>
+                <p className="text-xl font-bold text-[#2563EB]">{professional.certifications?.length || 0}+</p>
               </div>
             </div>
 
@@ -139,55 +205,60 @@ const Profile: React.FC = () => {
             </div>
 
             {/* Other Services */}
-            <div className="mt-8 bg-white p-6 rounded-lg shadow-sm">
-              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                <Briefcase className="h-6 w-6 text-[#2563EB] mr-2" />
-                Other Services Offered
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {professional.otherServices.map((service, index) => (
-                  <span 
-                    key={index} 
-                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#F9FAFB] text-gray-800 border border-gray-200"
-                  >
-                    {service}
-                  </span>
-                ))}
+            {professional.otherServices?.length > 0 && (
+              <div className="mt-8 bg-white p-6 rounded-lg shadow-sm">
+                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                  <Briefcase className="h-6 w-6 text-[#2563EB] mr-2" />
+                  Other Services Offered
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {professional.otherServices.map((service:string) => (
+                    <span 
+                      key={service} 
+                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#F9FAFB] text-gray-800 border border-gray-200"
+                    >
+                      {service}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Certifications */}
-            <div className="mt-8 bg-white p-6 rounded-lg shadow-sm">
-              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                <Award className="h-6 w-6 text-[#2563EB] mr-2" />
-                Certifications
-              </h2>
-              <ul className="space-y-3">
-                {professional.certifications.map((cert, index) => (
-                  <li key={index} className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                    <span>{cert}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {professional.certifications?.length > 0 && (
+              <div className="mt-8 bg-white p-6 rounded-lg shadow-sm">
+                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                  <Award className="h-6 w-6 text-[#2563EB] mr-2" />
+                  Certifications
+                </h2>
+                <ul className="space-y-3">
+                  {professional.certifications.map((cert:string) => (
+                    <li key={cert} className="flex items-center">
+                      <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+                      <span>{cert}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {/* Gallery Section */}
-            <div className="mt-8 bg-white p-6 rounded-lg shadow-sm">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Project Gallery</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {professional.gallery.map((image, index) => (
-                  <div key={index} className="aspect-square bg-gray-200 rounded-lg overflow-hidden group">
-                    <img 
-                      src={image} 
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      alt={`Project ${index + 1}`}
-                    />
-                  </div>
-                ))}
+            {professional.gallery?.length > 0 && (
+              <div className="mt-8 bg-white p-6 rounded-lg shadow-sm">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Project Gallery</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {professional.gallery.map((image:string) => (
+                    <div key={image} className="aspect-square bg-gray-200 rounded-lg overflow-hidden group">
+                      <img 
+                        src={image} 
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        alt={`Project ${image + 1}`}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-           
+            )}
           </div>
         </div>
       </div>

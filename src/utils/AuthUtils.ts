@@ -4,7 +4,6 @@ import { SECRET_KEY, STORAGE_KEY } from "../constants";
 import type { User } from "../Data/Models";
 
 
-
 interface AuthPayload {
   token: string;
   user: User;
@@ -56,4 +55,5 @@ export const getUser = (): User | null => {
  */
 export const clearAuthData = (): void => {
   localStorage.removeItem(STORAGE_KEY);
+ 
 };

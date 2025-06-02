@@ -1,3 +1,4 @@
+import EditProfile from "../features/Profile/Pages/editProfile"
 import Profile from "../features/Profile/Pages/Index"
 import SearchPage from "../features/Search/Pages/Index"
 import WebLayout from "../Web/components/WebLayout"
@@ -13,8 +14,12 @@ const webRoutes = {
             element:<Landing/>
         },
         {
-            path:'profile/:username',
+            path:'profile/:name',
             element:<Profile/>
+        },
+        {
+            path:'/edit/profile/:name',
+            element:<EditProfile/>
         },
         {
             path:'search-pros',

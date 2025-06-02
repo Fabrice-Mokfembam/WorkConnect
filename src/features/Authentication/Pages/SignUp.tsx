@@ -8,6 +8,7 @@ import InputField from '../Components/InputField';
 import { occupations } from '../../../constants';
 import { useRegister } from '../hooks/useAuth';
 import { useUser } from '../../../hooks/useUser';
+import { useCreateCategory } from '../../ManageCategories/hooks/useCategory';
 
 const SignUp: React.FC = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const SignUp: React.FC = () => {
   });
   const [showOccupationDropdown, setShowOccupationDropdown] = useState(false);
 const {mutate,isPending,error} = useRegister();
+const {mutate:createCategory} = useCreateCategory();
 
 const {storeUser} = useUser()
 
@@ -88,8 +90,15 @@ const {storeUser} = useUser()
   
     mutate(data, {
       onSuccess: (data) => {
-        storeUser(data);
-        navigate('/');
+        createCategory({name:data.user.occupation},{
+          onSuccess:()=>{
+            storeUser(data);
+
+            navigate('/');
+          },
+        
+        })
+        
       }
     });
   };
